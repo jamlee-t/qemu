@@ -221,6 +221,7 @@ static void pc_init1(MachineState *machine,
     }
     g_free(i8259);
     if (pcmc->pci_enabled) {
+        // 初始化 ioapic
         ioapic_init_gsi(gsi_state, "i440fx");
     }
 
