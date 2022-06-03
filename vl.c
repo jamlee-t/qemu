@@ -2996,6 +2996,10 @@ static int global_init_func(void *opaque, QemuOpts *opts, Error **errp)
 
 int main(int argc, char **argv, char **envp)
 {
+    // JAMLEE: 命令行代码入口
+    printf("-------------------------------------------------\n%s\
+-------------------------------------------------\n\n\n", "这里是入口\n");
+
     int i;
     int snapshot, linux_boot;
     const char *initrd_filename;

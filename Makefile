@@ -1,3 +1,6 @@
+# 连接到源码目录中的 Makefile 文件
+# Makefile -> /root/qemu/Makefile
+
 # Makefile for QEMU.
 
 # Always point to the root of the build tree (needs GNU make).
@@ -8,12 +11,20 @@ SRC_PATH=.
 
 UNCHECKED_GOALS := %clean TAGS cscope ctags docker docker-%
 
+# JAMLEE: $(wildcard *.c) 展开模式, 得到空格分隔的字符串
 # All following code might depend on configuration variables
 ifneq ($(wildcard config-host.mak),)
 # Put the all: rule here so that config-host.mak can contain dependencies.
 all:
+
+###########################################################################
+#
+# JAMLEE：引入 config-host.mak 配置文件, 其中 TOOLS 变量就在这里。config-host.mak 是根据 ../configure .. 生成的
+#
+###########################################################################
 include config-host.mak
 
+# JAMLEE: 当前如果不在源码目录, config-host.mak 这个文件必须要存在，否则直接退出make了
 # Check that we're not trying to do an out-of-tree build from
 # a tree that's been used for an in-tree build.
 ifneq ($(realpath $(SRC_PATH)),$(realpath .))
@@ -24,12 +35,14 @@ seems to have been used for an in-tree build. You can fix this by running \
 endif
 endif
 
+# JAMLEE： 是否开启了 SOFTMMU， USER_ONLY 注入到变量中
 CONFIG_SOFTMMU := $(if $(filter %-softmmu,$(TARGET_DIRS)),y)
 CONFIG_USER_ONLY := $(if $(filter %-user,$(TARGET_DIRS)),y)
 CONFIG_ALL=y
 -include config-all-devices.mak
 -include config-all-disas.mak
 
+# JAMLEE: 更新文件 config-host.mak
 config-host.mak: $(SRC_PATH)/configure $(SRC_PATH)/pc-bios
 	@echo $@ is out-of-date, running configure
 	@# TODO: The next lines include code which supports a smooth
@@ -48,6 +61,11 @@ ifneq ($(filter-out $(UNCHECKED_GOALS),$(MAKECMDGOALS)),$(if $(MAKECMDGOALS),,fa
 endif
 endif
 
+############################################################################
+#
+# JAMLEE: 重要，引入源码目录下的 rules.mak。这个文件定义例如 c 编译的规则
+#
+############################################################################
 include $(SRC_PATH)/rules.mak
 
 GENERATED_HEADERS = qemu-version.h config-host.h qemu-options.def
@@ -89,6 +107,7 @@ LIBS+=-lz $(LIBS_TOOLS)
 
 HELPERS-$(CONFIG_LINUX) = qemu-bridge-helper$(EXESUF)
 
+# JAMLEE：是否编译文档，自己编译就 --disable-docs 不编译了
 ifdef BUILD_DOCS
 DOCS=qemu-doc.html qemu.1 qemu-img.1 qemu-nbd.8 qemu-ga.8
 ifdef CONFIG_VIRTFS
@@ -98,6 +117,9 @@ else
 DOCS=
 endif
 
+# JAMLEE: 
+# SUBDIR_DEVICES_MAK=x86_64-softmmu/config-devices.mak
+# SUBDIR_DEVICES_MAK_DEP=x86_64-softmmu-config-devices.mak.d
 SUBDIR_MAKEFLAGS=$(if $(V),,--no-print-directory) BUILD_DIR=$(BUILD_DIR)
 SUBDIR_DEVICES_MAK=$(patsubst %, %/config-devices.mak, $(TARGET_DIRS))
 SUBDIR_DEVICES_MAK_DEP=$(patsubst %, %-config-devices.mak.d, $(TARGET_DIRS))
@@ -113,8 +135,12 @@ config-all-devices.mak: $(SUBDIR_DEVICES_MAK)
              "GEN","$@")
 endif
 
+# JAMLEE: x86_64-softmmu-config-devices.mak.d。这个文件可以没有
+# https://www.gnu.org/software/make/manual/html_node/Include.html
+# If you want make to simply ignore a makefile which does not exist or cannot be remade, with no error message, use the -include directive instead of include, like this:
 -include $(SUBDIR_DEVICES_MAK_DEP)
 
+# JAMLEE: 生成 config-devices.mak 文件。这个文件必须先生成
 %/config-devices.mak: default-configs/%.mak $(SRC_PATH)/scripts/make_device_config.sh
 	$(call quiet-command, \
             $(SHELL) $(SRC_PATH)/scripts/make_device_config.sh $< $*-config-devices.mak.d $@ > $@.tmp,"GEN","$@.tmp")
@@ -139,6 +165,11 @@ endif
 defconfig:
 	rm -f config-all-devices.mak $(SUBDIR_DEVICES_MAK)
 
+############################################################################
+#
+# 引入源码目录的 Makefile.objs。文件定义不同的变量关联不同的文件。这个很重要。
+#
+############################################################################
 ifneq ($(wildcard config-host.mak),)
 include $(SRC_PATH)/Makefile.objs
 endif
@@ -163,7 +194,15 @@ ifneq ($(wildcard config-host.mak),)
 include $(SRC_PATH)/tests/Makefile.include
 endif
 
+################################################################################
+#
+# 编译入口。--disable-docs 关闭文档; 
+#
+################################################################################
 all: $(DOCS) $(TOOLS) $(HELPERS-y) recurse-all modules
+	@echo "--------------------------------------------------"
+	@echo "默认的编译目标"
+	@echo "--------------------------------------------------"
 
 qemu-version.h: FORCE
 	$(call quiet-command, \
@@ -190,7 +229,14 @@ config-host.h-timestamp: config-host.mak
 qemu-options.def: $(SRC_PATH)/qemu-options.hx $(SRC_PATH)/scripts/hxtool
 	$(call quiet-command,sh $(SRC_PATH)/scripts/hxtool -h < $< > $@,"GEN","$@")
 
-SUBDIR_RULES=$(patsubst %,subdir-%, $(TARGET_DIRS))
+#################################################################
+#
+# JAMLEE: SUBDIR_RULES 是个变量，变量作为 target 时注意 target 十多个
+#
+#################################################################
+# 1. 函数作用 $(patsubst %.c,%.o,x.c.c bar.c) => 得到 'x.c.o bar.o'
+# 2. TARGET_DIRS=x86_64-softmmu
+SUBDIR_RULES=$(patsubst %,subdir-%, $(TARGET_DIRS)) # SUBDIR_RULES 得到 subdir-x86_64-softmmu
 SOFTMMU_SUBDIR_RULES=$(filter %-softmmu,$(SUBDIR_RULES))
 
 $(SOFTMMU_SUBDIR_RULES): $(block-obj-y)
@@ -198,6 +244,9 @@ $(SOFTMMU_SUBDIR_RULES): $(crypto-obj-y)
 $(SOFTMMU_SUBDIR_RULES): $(io-obj-y)
 $(SOFTMMU_SUBDIR_RULES): config-all-devices.mak
 
+# JAMLEE: subdir-x86_64-softmmu
+# if the target is dir/a.foo.b and the target pattern is a.%.b then the stem is dir/foo
+# $* 这里匹配到 x86_64-softmmu 
 subdir-%:
 	$(call quiet-command,$(MAKE) $(SUBDIR_MAKEFLAGS) -C $* V="$(V)" TARGET_DIR="$*/" all,)
 
@@ -229,6 +278,7 @@ romsubdir-%:
 
 ALL_SUBDIRS=$(TARGET_DIRS) $(patsubst %,pc-bios/%, $(ROMS))
 
+# JAMLEE: 所有子目录和ROM目录
 recurse-all: $(SUBDIR_RULES) $(ROMSUBDIR_RULES)
 
 $(BUILD_DIR)/version.o: $(SRC_PATH)/version.rc config-host.h | $(BUILD_DIR)/version.lo

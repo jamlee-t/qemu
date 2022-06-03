@@ -40,6 +40,7 @@ io-obj-y = io/
 # suppress *all* target specific code in case of system emulation, i.e. a
 # single QEMU executable should support all CPUs and machines.
 
+# JAMLEE: 开启 softmmu 的文件编译时引入这些文件
 ifeq ($(CONFIG_SOFTMMU),y)
 common-obj-y = blockdev.o blockdev-nbd.o block/
 common-obj-y += iothread.o

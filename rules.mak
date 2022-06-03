@@ -25,6 +25,17 @@ QEMU_DGFLAGS += -MMD -MP -MT $@ -MF $(@D)/$(*F).d
 # Same as -I$(SRC_PATH) -I., but for the nested source/object directories
 QEMU_INCLUDES += -I$(<D) -I$(@D)
 
+# JAMLEE: 变量 $1
+# https://stackoverflow.com/questions/30965785/whats-the-difference-between-and-1-when-there-is-only-one-parameter
+# $1 在 make file 中不是什么特指，变量名为 1 而已
+# 1 = one
+# target:
+#     @echo '@ = $@'
+#     @echo '1 = $1'
+# $ make
+# @ = target
+# 1 = one
+
 WL_U := -Wl,-u,
 find-symbols = $(if $1, $(sort $(shell $(NM) -P -g $1 | $2)))
 defined-symbols = $(call find-symbols,$1,awk '$$2!="U"{print $$1}')
@@ -259,6 +270,11 @@ define unnest-var-recursive
             $(call unnest-var-recursive,$1,$2,$3))
 endef
 
+###################################################################################################
+#
+# JAMLEE: 重要，读取的变量中是目录的成员（变量是空格分割的字符串）， Makefile.objs 返回变量。
+#
+###################################################################################################
 # unnest-vars
 # Usage: $(call unnest-vars, obj_prefix, vars)
 #
