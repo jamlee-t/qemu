@@ -1,5 +1,9 @@
 mainloop-1
 mainloop-2
+mainloop-3
+mainloop-4
 socket-client
 socket-server
 gobject
+gmodule
+libmodule.so

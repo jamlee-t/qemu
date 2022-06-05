@@ -2,6 +2,10 @@ mainloop-1:
 	gcc -g `pkg-config --cflags --libs glib-2.0 gthread-2.0` mainloop-1.c -o mainloop-1
 mainloop-2:
 	gcc -g `pkg-config --cflags --libs glib-2.0 gthread-2.0` mainloop-2.c -o mainloop-2
+mainloop-3:
+	gcc -g `pkg-config --cflags --libs glib-2.0 gthread-2.0` mainloop-3.c -o mainloop-3
+mainloop-4:
+	gcc -g `pkg-config --cflags --libs glib-2.0 gthread-2.0` mainloop-4.c -o mainloop-4
 socket:
 	gcc -g `pkg-config --cflags --libs glib-2.0 gthread-2.0 gio-2.0` socket-server.c -o socket-server
 	gcc -g `pkg-config --cflags --libs glib-2.0 gthread-2.0 gio-2.0` socket-client.c -o socket-client
