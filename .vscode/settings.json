@@ -1,0 +1,7 @@
+{
+    "makefile.extensionOutputFolder": "./.vscode",
+    "files.associations": {
+        "*.def": "c",
+        "qemu-options-wrapper.h": "c"
+    }
+}

@@ -203,6 +203,7 @@ static void change_root(void)
 
 }
 
+// JAMLEE: 以 daemonize 形式运行当前进程
 void os_daemonize(void)
 {
     if (daemonize) {

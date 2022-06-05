@@ -61,6 +61,7 @@ static const int ide_iobase[MAX_IDE_BUS] = { 0x1f0, 0x170 };
 static const int ide_iobase2[MAX_IDE_BUS] = { 0x3f6, 0x376 };
 static const int ide_irq[MAX_IDE_BUS] = { 14, 15 };
 
+// JAMLEE: 这里由 vl.c 中的代码 machine_class->init 调用到
 /* PC hardware initialisation */
 static void pc_init1(MachineState *machine,
                      const char *host_type, const char *pci_type)
@@ -417,6 +418,8 @@ static void pc_xen_hvm_init(MachineState *machine)
 }
 #endif
 
+// JAMLEE: 定义 IF440FX 类型的板子（主机）。DEFINE_I440FX_MACHINE->DEFINE_PC_MACHINE->DEFINE_MACHINE。
+// 这里会在 main 函数前运行的。
 #define DEFINE_I440FX_MACHINE(suffix, name, compatfn, optionfn) \
     static void pc_init_##suffix(MachineState *machine) \
     { \

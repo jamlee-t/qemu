@@ -338,6 +338,7 @@ void rcu_after_fork(void)
     rcu_init_complete();
 }
 
+// JAMLEE: 启动时
 static void __attribute__((__constructor__)) rcu_init(void)
 {
 #ifdef CONFIG_POSIX

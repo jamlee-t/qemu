@@ -62,6 +62,11 @@ typedef struct {
     CPUArchId cpus[0];
 } CPUArchIdList;
 
+////////////////////////////////////////////////////////////////
+//
+// JAMLEE: 定义 MachineClass。代表 1 个虚拟机
+//
+////////////////////////////////////////////////////////////////
 /**
  * MachineClass:
  * @get_hotplug_handler: this function is called during bus-less
@@ -180,6 +185,7 @@ struct MachineState {
     AccelState *accelerator;
 };
 
+// JAMLEE: 定义机器类型。type_init 是模块初始化。会在 main 函数前运行
 #define DEFINE_MACHINE(namestr, machine_initfn) \
     static void machine_initfn##_class_init(ObjectClass *oc, void *data) \
     { \

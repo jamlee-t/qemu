@@ -1218,6 +1218,7 @@ static void default_drive(int enable, int snapshot, BlockInterfaceType type,
 
 }
 
+// JAMLEE: 定义参数，这样的话才可以解析
 static QemuOptsList qemu_smp_opts = {
     .name = "smp-opts",
     .implied_opt_name = "cpus",
@@ -1514,8 +1515,10 @@ static MachineClass *find_machine(const char *name)
     return mc;
 }
 
+// JAMLEE: 默认的硬件机器类型
 MachineClass *find_default_machine(void)
 {
+    // JAMLEE: 查找 TYPE_MACHINE 的所有子类，false 表示不包含抽象
     GSList *el, *machines = object_class_get_list(TYPE_MACHINE, false);
     MachineClass *mc = NULL;
 
@@ -2005,6 +2008,8 @@ typedef struct QEMUOption {
     uint32_t arch_mask;
 } QEMUOption;
 
+// JAMLEE: qemu-options-wrapper.h -> qemu-options.def
+// make qemu-options.def 可以生成这个 qemu-options.def 文件
 static const QEMUOption qemu_options[] = {
     { "h", 0, QEMU_OPTION_h, QEMU_ARCH_ALL },
 #define QEMU_OPTIONS_GENERATE_OPTIONS
@@ -2739,29 +2744,32 @@ static void qemu_run_machine_init_done_notifiers(void)
     machine_init_done = true;
 }
 
+// JAMLEE: 从  argc 和 argv 中解析配置文件。
+// 1. poptarg 返回值是当前被解析的参数值
 static const QEMUOption *lookup_opt(int argc, char **argv,
                                     const char **poptarg, int *poptind)
 {
     const QEMUOption *popt;
-    int optind = *poptind;
-    char *r = argv[optind];
-    const char *optarg;
+    int optind = *poptind;  // optind 参数索引
+    char *r = argv[optind]; // r 就是参数名
+    const char *optarg; // 取到的参数值
 
     loc_set_cmdline(argv, optind, 1);
     optind++;
     /* Treat --foo the same as -foo.  */
     if (r[1] == '-')
         r++;
-    popt = qemu_options;
+    popt = qemu_options; // 全局变量，数组， 存储了所有的参数定义
     for(;;) {
         if (!popt->name) {
             error_report("invalid option");
             exit(1);
         }
-        if (!strcmp(popt->name, r + 1))
+        if (!strcmp(popt->name, r + 1)) // 对比参数名称，break 意味着找到了定义
             break;
         popt++;
     }
+    // JAMLEE: 这个选项是否有参数值
     if (popt->flags & HAS_ARG) {
         if (optind >= argc) {
             error_report("requires an argument");
@@ -2773,12 +2781,13 @@ static const QEMUOption *lookup_opt(int argc, char **argv,
         optarg = NULL;
     }
 
-    *poptarg = optarg;
-    *poptind = optind;
+    *poptarg = optarg; // 返回参数的值
+    *poptind = optind; // 返回参数的索引
 
     return popt;
 }
 
+// JAMLEE: 挑选机器类型。不同的机器模拟的硬件结构不同
 static MachineClass *select_machine(void)
 {
     MachineClass *machine_class = find_default_machine();
@@ -2997,8 +3006,7 @@ static int global_init_func(void *opaque, QemuOpts *opts, Error **errp)
 int main(int argc, char **argv, char **envp)
 {
     // JAMLEE: 命令行代码入口
-    printf("-------------------------------------------------\n%s\
--------------------------------------------------\n\n\n", "这里是入口\n");
+    printf("-------------------------------------------------\n%s-------------------------------------------------\n\n\n", "这里是入口\n");
 
     int i;
     int snapshot, linux_boot;
@@ -3013,6 +3021,7 @@ int main(int argc, char **argv, char **envp)
     int optind;
     const char *optarg;
     const char *loadvm = NULL;
+    // JAMLEE: 当前启动时的主机类型，例如 i440FX + piix3
     MachineClass *machine_class;
     const char *cpu_model;
     const char *vga_model = NULL;
@@ -3035,6 +3044,7 @@ int main(int argc, char **argv, char **envp)
     Error *err = NULL;
     bool list_data_dirs = false;
 
+    // JAMLEE: trace_init 宏注册这类型的模块
     module_call_init(MODULE_INIT_TRACE);
 
     qemu_init_cpu_list();
@@ -3045,7 +3055,9 @@ int main(int argc, char **argv, char **envp)
     error_set_progname(argv[0]);
     qemu_init_exec_dir(argv[0]);
 
+    // JAMLEE: type_init 宏注册这类型的模块。注意 Machine 定义就是在这里初始化的。
     module_call_init(MODULE_INIT_QOM);
+
     module_call_init(MODULE_INIT_QAPI);
 
     qemu_add_opts(&qemu_drive_opts);
@@ -3080,6 +3092,7 @@ int main(int argc, char **argv, char **envp)
 #ifdef CONFIG_LIBISCSI
     qemu_add_opts(&qemu_iscsi_opts);
 #endif
+    // JAMLEE: opts_init 宏注册这类型的模块。这些模块具有解析配置文件的能力
     module_call_init(MODULE_INIT_OPTS);
 
     runstate_init();
@@ -3100,10 +3113,12 @@ int main(int argc, char **argv, char **envp)
 
     nb_nics = 0;
 
+    // JAMLEE: 也就是 module_call_init(MODULE_INIT_BLOCK);
     bdrv_init_with_whitelist();
 
     autostart = 1;
 
+    // JAMLEE: 遍历所有以 "-" 开头的参数
     /* first pass of option parsing */
     optind = 1;
     while (optind < argc) {
@@ -3133,6 +3148,7 @@ int main(int argc, char **argv, char **envp)
         }
     }
 
+    // JAMLEE: 第2次配置解析。解析配置文件足有 1k 行
     /* second pass of option parsing */
     optind = 1;
     for(;;) {
@@ -3148,6 +3164,7 @@ int main(int argc, char **argv, char **envp)
                 error_report("Option not supported for this target");
                 exit(1);
             }
+            // JAMLEE: 这里内部的 break 是 跳出 switch 
             switch(popt->index) {
             case QEMU_OPTION_no_kvm_irqchip: {
                 olist = qemu_find_opts("machine");
@@ -4049,6 +4066,7 @@ int main(int argc, char **argv, char **envp)
                 }
                 break;
             default:
+                // JAMLEE: 例如 daemonize 这样的参数
                 os_parse_cmd_args(popt->index, optarg);
             }
         }
@@ -4058,15 +4076,23 @@ int main(int argc, char **argv, char **envp)
      * Best done right after the loop.  Do not insert code here!
      */
     loc_set_none();
+    // JAMLEE: 完成配置解析
 
+    // JAMLEE:
+    // https://wiki.qemu.org/Features/record-replay
+    // 记录/回放功能是系统级仿真（softmmu 模式）的确定性回放的实现。
+    // 记录/重放函数用于 qemu 执行的反向执行和确定性重放。Determinitsic replay 用于记录 volatile 系统执行一次并重放多次，以便分析、调试、记录等。确定性重放的这种实现可用于通过 gdb 远程接口对来宾代码进行确定性和反向调试。
     replay_configure(icount_opts);
-
+    
+    // JAMLEE: 此时 init 函数已经设置好了， 0x5555558046c0 <pc_init_v2_8>
     machine_class = select_machine();
 
     set_memory_options(&ram_slots, &maxram_size, machine_class);
 
+    // JAMLEE: 当前是否 daemonize 运行 
     os_daemonize();
 
+    // qemu 自己维护 1 个 pidfile 表示当前qemu正在运行
     if (pid_file && qemu_create_pidfile(pid_file) != 0) {
         error_report("could not acquire pid file: %s", strerror(errno));
         exit(1);
@@ -4099,6 +4125,7 @@ int main(int argc, char **argv, char **envp)
     }
 #endif
 
+    // JAMLEE: 创建 machine
     current_machine = MACHINE(object_new(object_class_get_name(
                           OBJECT_CLASS(machine_class))));
     if (machine_help_func(qemu_get_machine_opts(), current_machine)) {
@@ -4549,6 +4576,11 @@ int main(int argc, char **argv, char **envp)
     current_machine->boot_order = boot_order;
     current_machine->cpu_model = cpu_model;
 
+    ////////////////////////////////////////////////////////////////////////
+    //
+    // JAMLEE: 调用 init 方法初始化真正的 Machine
+    //
+    ////////////////////////////////////////////////////////////////////////
     machine_class->init(current_machine);
 
     realtime_init();

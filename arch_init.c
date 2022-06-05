@@ -93,6 +93,7 @@ static struct defconfig_file {
     { NULL }, /* end of list */
 };
 
+// JAMLEE: 从配置文件 qemu.conf 读取配置
 int qemu_read_default_config_files(bool userconfig)
 {
     int ret;

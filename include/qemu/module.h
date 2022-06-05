@@ -18,6 +18,8 @@
 #define DSO_STAMP_FUN         glue(qemu_stamp, CONFIG_STAMP)
 #define DSO_STAMP_FUN_STR     stringify(DSO_STAMP_FUN)
 
+// JAMLEE: do_qemu_init_${function} 也就是 module_init。会定义1个函数。该函数会在 main 函数之前运行。
+// 注册模块到某个类型的模块列表上。
 #ifdef BUILD_DSO
 void DSO_STAMP_FUN(void);
 /* This is a dummy symbol to identify a loaded DSO as a QEMU module, so we can
@@ -39,6 +41,7 @@ static void __attribute__((constructor)) do_qemu_init_ ## function(void)    \
 }
 #endif
 
+// JAMLEE: 模块类型枚举定义
 typedef enum {
     MODULE_INIT_BLOCK,
     MODULE_INIT_OPTS,
@@ -48,6 +51,7 @@ typedef enum {
     MODULE_INIT_MAX
 } module_init_type;
 
+// JAMLEE: 调用 module_init 会执行所有注册这个类型的模块的初始化函数。
 #define block_init(function) module_init(function, MODULE_INIT_BLOCK)
 #define opts_init(function) module_init(function, MODULE_INIT_OPTS)
 #define qapi_init(function) module_init(function, MODULE_INIT_QAPI)
@@ -56,6 +60,7 @@ typedef enum {
 
 #define block_module_load_one(lib) module_load_one("block-", lib)
 
+// JAMLEE: 注册模块到全局变量。被这样 block_init 的封装着用 
 void register_module_init(void (*fn)(void), module_init_type type);
 void register_dso_module_init(void (*fn)(void), module_init_type type);
 

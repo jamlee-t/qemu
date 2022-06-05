@@ -66,7 +66,7 @@ static void acpi_register_config(void)
 {
     qemu_add_opts(&qemu_acpi_opts);
 }
-
+// JAMLEE: 注册 acpi_register_config 命令行配置解析
 opts_init(acpi_register_config);
 
 static int acpi_checksum(const uint8_t *data, int len)

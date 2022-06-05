@@ -87,6 +87,7 @@ void register_dso_module_init(void (*fn)(void), module_init_type type)
     QTAILQ_INSERT_TAIL(&dso_init_list, e, node);
 }
 
+// JAMLEE: 执行模块的 init 函数。
 void module_call_init(module_init_type type)
 {
     ModuleTypeList *l;

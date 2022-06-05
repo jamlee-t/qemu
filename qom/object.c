@@ -867,6 +867,7 @@ static void object_class_get_list_tramp(ObjectClass *klass, void *opaque)
     *list = g_slist_prepend(*list, klass);
 }
 
+// JAMLEE: 获取实现了类型的所有对象
 GSList *object_class_get_list(const char *implements_type,
                               bool include_abstract)
 {

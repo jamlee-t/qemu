@@ -5,6 +5,7 @@
 #include "qemu/config-file.h"
 #include "qmp-commands.h"
 
+// JAMLEE: 全局变量配置，来自于命令行
 static QemuOptsList *vm_config_groups[48];
 static QemuOptsList *drive_config_groups[5];
 
@@ -287,6 +288,7 @@ void qemu_add_drive_opts(QemuOptsList *list)
     abort();
 }
 
+// JAMLEE: 添加 list 到 vm_config_groups 全局变量。
 void qemu_add_opts(QemuOptsList *list)
 {
     int entries, i;
@@ -303,6 +305,7 @@ void qemu_add_opts(QemuOptsList *list)
     abort();
 }
 
+// JAMLEE: 设置选项
 int qemu_set_option(const char *str)
 {
     Error *local_err = NULL;

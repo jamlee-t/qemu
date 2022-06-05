@@ -1,0 +1,34 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) qemu",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/x86_64-softmmu/qemu-system-x86_64",
+            "args": ["--smp", "2", "--enable-kvm", "-kernel", "/root/qemu/0_note/bzImage", "-hda",
+                "/root/qemu/0_note/rootfs.img", "-append", "root=/dev/sda1 console=ttyS0", "-nographic", "-cdrom",
+                "/root/qemu/0_note/jamlee_123456.iso"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "将反汇编风格设置为 Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

@@ -226,6 +226,8 @@ qemu-version.h: FORCE
 
 config-host.h: config-host.h-timestamp
 config-host.h-timestamp: config-host.mak
+
+# JAMLEE: 生成选项配置定义文件
 qemu-options.def: $(SRC_PATH)/qemu-options.hx $(SRC_PATH)/scripts/hxtool
 	$(call quiet-command,sh $(SRC_PATH)/scripts/hxtool -h < $< > $@,"GEN","$@")
 

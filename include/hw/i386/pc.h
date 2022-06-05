@@ -932,6 +932,7 @@ bool e820_get_entry(int, uint32_t, uint64_t *, uint64_t *);
         .value = "off",\
     },
 
+// JAMLEE: 定义 PC 类型的板子（主机）
 #define DEFINE_PC_MACHINE(suffix, namestr, initfn, optsfn) \
     static void pc_machine_##suffix##_class_init(ObjectClass *oc, void *data) \
     { \
