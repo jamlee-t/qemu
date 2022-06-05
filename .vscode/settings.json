@@ -2,6 +2,10 @@
     "makefile.extensionOutputFolder": "./.vscode",
     "files.associations": {
         "*.def": "c",
-        "qemu-options-wrapper.h": "c"
-    }
+        "qemu-options-wrapper.h": "c",
+        "glib.h": "c",
+        "types.h": "c",
+        "glib-unix.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }
