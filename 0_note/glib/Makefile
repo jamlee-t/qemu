@@ -7,3 +7,6 @@ socket:
 	gcc -g `pkg-config --cflags --libs glib-2.0 gthread-2.0 gio-2.0` socket-client.c -o socket-client
 gobject:
 	gcc -g `pkg-config --cflags --libs glib-2.0 gthread-2.0 gobject-2.0` gobject.c -o gobject
+gmodule:
+	gcc -o libmodule.so -fPIC -shared `pkg-config --libs --cflags glib-2.0 gmodule-2.0` gmodule_module.c
+	gcc -o gmodule `pkg-config --libs --cflags glib-2.0 gmodule-2.0` gmodule.c
