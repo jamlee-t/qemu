@@ -28,6 +28,7 @@
 
 #define IRQ(obj) OBJECT_CHECK(struct IRQState, (obj), TYPE_IRQ)
 
+// JAMLEE: IRQState 表示 1 个中断引脚
 struct IRQState {
     Object parent_obj;
 
@@ -60,6 +61,7 @@ qemu_irq *qemu_extend_irqs(qemu_irq *old, int n_old, qemu_irq_handler handler,
     return s;
 }
 
+// JAMLEE: qemu 分配中断，返回 qemu_irq 是 GSIState 结构体指针。
 qemu_irq *qemu_allocate_irqs(qemu_irq_handler handler, void *opaque, int n)
 {
     return qemu_extend_irqs(NULL, 0, handler, opaque, n);

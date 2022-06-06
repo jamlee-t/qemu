@@ -89,6 +89,7 @@ qemu_irq isa_get_irq(ISADevice *dev, int isairq)
     return isabus->irqs[isairq];
 }
 
+// JAMLEE: 申请 irq 资源。
 void isa_init_irq(ISADevice *dev, qemu_irq *p, int isairq)
 {
     assert(dev->nirqs < ARRAY_SIZE(dev->isairq));

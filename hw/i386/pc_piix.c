@@ -184,7 +184,9 @@ static void pc_init1(MachineState *machine,
 
     gsi_state = g_malloc0(sizeof(*gsi_state));
     if (kvm_ioapic_in_kernel()) {
+        // JAMLEE：设置 kvm 中的中断信息
         kvm_pc_setup_irq_routing(pcmc->pci_enabled);
+        // JAMLEE：设置 qemu 中 GSIState
         pcms->gsi = qemu_allocate_irqs(kvm_pc_gsi_handler, gsi_state,
                                        GSI_NUM_PINS);
     } else {
@@ -209,6 +211,11 @@ static void pc_init1(MachineState *machine,
     }
     isa_bus_irqs(isa_bus, pcms->gsi);
 
+    ///////////////////////////////////////////////////////////////////////
+    //
+    // JAMLEE: 分配中断注入函数，重要
+    //
+    ///////////////////////////////////////////////////////////////////////
     if (kvm_pic_in_kernel()) {
         i8259 = kvm_i8259_init(isa_bus);
     } else if (xen_enabled()) {

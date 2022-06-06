@@ -195,6 +195,7 @@ void ioapic_dump_state(Monitor *mon, const QDict *qdict);
 
 #define GSI_NUM_PINS IOAPIC_NUM_PINS
 
+// JAMLEE: 表示2个中断芯片的引脚的数组
 typedef struct GSIState {
     qemu_irq i8259_irq[ISA_NUM_IRQS];
     qemu_irq ioapic_irq[IOAPIC_NUM_PINS];

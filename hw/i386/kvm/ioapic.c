@@ -17,13 +17,17 @@
 #include "hw/i386/apic_internal.h"
 #include "sysemu/kvm.h"
 
+// JAMLEE: 设置 irq 路由。可以看到这里的 kvm_irq_routing_entry 没有初始化 set 函数。
+// void kvm_irqchip_add_irq_route(KVMState *s, int irq, int irqchip, int pin)
 /* PC Utility function */
 void kvm_pc_setup_irq_routing(bool pci_enabled)
 {
-    KVMState *s = kvm_state;
+    KVMState *s = kvm_state; // 全局的 kvm_state
     int i;
 
+    // kvm 检查 IRQ_ROUTING 是否支持先。然后设置
     if (kvm_check_extension(s, KVM_CAP_IRQ_ROUTING)) {
+        // 0-16 按照传统的XT-PIC的设置方法
         for (i = 0; i < 8; ++i) {
             if (i == 2) {
                 continue;
@@ -33,6 +37,7 @@ void kvm_pc_setup_irq_routing(bool pci_enabled)
         for (i = 8; i < 16; ++i) {
             kvm_irqchip_add_irq_route(s, i, KVM_IRQCHIP_PIC_SLAVE, i - 8);
         }
+
         if (pci_enabled) {
             for (i = 0; i < 24; ++i) {
                 if (i == 0) {
@@ -46,6 +51,7 @@ void kvm_pc_setup_irq_routing(bool pci_enabled)
     }
 }
 
+// JAMLEE: 所有引脚的 handler 都为设置这个函数
 void kvm_pc_gsi_handler(void *opaque, int n, int level)
 {
     GSIState *s = opaque;

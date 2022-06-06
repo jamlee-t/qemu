@@ -126,6 +126,7 @@ static void kvm_pic_realize(DeviceState *dev, Error **errp)
     kpc->parent_realize(dev, errp);
 }
 
+// JAMLEE: 初始化注入函数。调用这里的函数进行中断注入
 qemu_irq *kvm_i8259_init(ISABus *bus)
 {
     i8259_init_chip(TYPE_KVM_I8259, bus, true);

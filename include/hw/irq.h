@@ -5,6 +5,14 @@
 
 #define TYPE_IRQ "irq"
 
+
+// struct IRQState {
+//     Object parent_obj;
+
+//     qemu_irq_handler handler;
+//     void *opaque;
+//     int n;
+// };
 typedef struct IRQState *qemu_irq;
 
 typedef void (*qemu_irq_handler)(void *opaque, int n, int level);

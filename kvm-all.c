@@ -1044,6 +1044,7 @@ void kvm_init_irq_routing(KVMState *s)
     kvm_arch_init_irq_routing(s);
 }
 
+// JAMLEE: 最终设置中断路由表到 kvm 中
 void kvm_irqchip_commit_routes(KVMState *s)
 {
     int ret;
@@ -1058,6 +1059,7 @@ void kvm_irqchip_commit_routes(KVMState *s)
 
     s->irq_routes->flags = 0;
     trace_kvm_irqchip_commit_routes();
+    // JAMLEE: 最终设置到 kvm 中
     ret = kvm_vm_ioctl(s, KVM_SET_GSI_ROUTING, s->irq_routes);
     assert(ret == 0);
 }
@@ -1110,6 +1112,7 @@ static int kvm_update_routing_entry(KVMState *s,
     return -ESRCH;
 }
 
+// JAMLEE: 添加 kvm_irq_routing_entry 到 kvm 中
 void kvm_irqchip_add_irq_route(KVMState *s, int irq, int irqchip, int pin)
 {
     struct kvm_irq_routing_entry e = {};
