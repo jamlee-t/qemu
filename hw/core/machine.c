@@ -11,7 +11,10 @@
  */
 
 #include "qemu/osdep.h"
+
+// JAMLEE: machine 也就是代表主板
 #include "hw/boards.h"
+
 #include "qapi/error.h"
 #include "qapi-visit.h"
 #include "qapi/visitor.h"

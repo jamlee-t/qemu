@@ -2333,6 +2333,7 @@ static void pc_machine_class_init(ObjectClass *oc, void *data)
         pc_machine_get_nvdimm, pc_machine_set_nvdimm, &error_abort);
 }
 
+// JAMLEE: 定义 pc 类型的主板（机器）。当前是抽象类
 static const TypeInfo pc_machine_info = {
     .name = TYPE_PC_MACHINE,
     .parent = TYPE_MACHINE,

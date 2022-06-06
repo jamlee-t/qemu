@@ -29,7 +29,7 @@ typedef struct _MyDemo MyDemo;
 
 struct _MyDemo {
     GObject parent;
-    MyDemoPrivate *priv;
+    MyDemoPrivate *priv; // 定义私有字段。也就说实例的字段是在实例结构体中定义
 };
 
 // 类结构体

@@ -448,6 +448,9 @@ static void pc_i440fx_2_8_machine_options(MachineClass *m)
     m->is_default = 1;
 }
 
+// JAMLEE: pc_init_v2_8 机器定义。DEFINE_I440FX_MACHINE(suffix, name, compatfn, optionfn)
+// 注意这个类的父类不是 machine 而是， generic-pc-machine。继承类的路径为： TYPE_PC_MACHINE -> TYPE_MACHINE -> TYPE_OBJECT
+// compatfn: NULL
 DEFINE_I440FX_MACHINE(v2_8, "pc-i440fx-2.8", NULL,
                       pc_i440fx_2_8_machine_options);
 

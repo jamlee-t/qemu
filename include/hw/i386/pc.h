@@ -33,6 +33,7 @@
 #define kvm_ioapic_in_kernel()   0
 #endif
 
+// JAMLEE: PCMachineState->MachineState 
 /**
  * PCMachineState:
  * @acpi_dev: link to ACPI PM device that performs ACPI hotplug handling

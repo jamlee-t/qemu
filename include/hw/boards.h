@@ -64,7 +64,7 @@ typedef struct {
 
 ////////////////////////////////////////////////////////////////
 //
-// JAMLEE: 定义 MachineClass。代表 1 个虚拟机
+// JAMLEE: 定义 MachineClass。代表 1 个主板类型
 //
 ////////////////////////////////////////////////////////////////
 /**
@@ -144,6 +144,8 @@ struct MachineClass {
     HotpluggableCPUList *(*query_hotpluggable_cpus)(MachineState *machine);
 };
 
+// JAMLEE: 定义 MachineState。 1 个主板类型的配置信息，从命令行解析的配置
+// 会被整理到这里存放。MachineState 是实例结构体，MachineClass 是类结构体。
 /**
  * MachineState:
  */
@@ -185,7 +187,27 @@ struct MachineState {
     AccelState *accelerator;
 };
 
-// JAMLEE: 定义机器类型。type_init 是模块初始化。会在 main 函数前运行
+// JAMLEE: 定义机器类型。type_init 是模块初始化。会在 main 函数前运行。类似是有 DEFINE_PC_MACHINE
+// type_init 决定了这个 machine_initfn##_typeinfo 会被注册到类链表中。
+
+// 父类 machine_info 定义在 hw/core/machine.c。奇怪的是 MachineClass 和 MachineState 却又定义到这个文件。
+// static const TypeInfo machine_info = {
+//     .name = TYPE_MACHINE,
+//     .parent = TYPE_OBJECT,
+//     .abstract = true,
+//     .class_size = sizeof(MachineClass),
+//     .class_init    = machine_class_init,
+//     .class_base_init = machine_class_base_init,
+//     .class_finalize = machine_class_finalize,
+//     .instance_size = sizeof(MachineState),
+//     .instance_init = machine_initfn,
+//     .instance_finalize = machine_finalize,
+// };
+
+// DEFINE_MACHINE 定义出来的类。其父类是 machine，当前类叫做 xxx-machine
+
+// 定义类的关键
+// 1. class_init 方法，初始化类 MachineClass
 #define DEFINE_MACHINE(namestr, machine_initfn) \
     static void machine_initfn##_class_init(ObjectClass *oc, void *data) \
     { \

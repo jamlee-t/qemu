@@ -1954,6 +1954,12 @@ static bool main_loop_should_exit(void)
     return false;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
+//
+// JAMLEE: QEMU 事件循环。qemu事件循环可以提供4种服务：监听文件描述符，
+// 监听线程间事件，定时器，下半部（bottom half，以下简称bh）
+//
+////////////////////////////////////////////////////////////////////////////////////////
 static void main_loop(void)
 {
     bool nonblocking;
@@ -3021,8 +3027,10 @@ int main(int argc, char **argv, char **envp)
     int optind;
     const char *optarg;
     const char *loadvm = NULL;
+    
     // JAMLEE: 当前启动时的主机类型，例如 i440FX + piix3
     MachineClass *machine_class;
+
     const char *cpu_model;
     const char *vga_model = NULL;
     const char *qtest_chrdev = NULL;
@@ -4125,7 +4133,7 @@ int main(int argc, char **argv, char **envp)
     }
 #endif
 
-    // JAMLEE: 创建 machine
+    // JAMLEE: 创建 machine。主要是 object_new 创建出来对象。
     current_machine = MACHINE(object_new(object_class_get_name(
                           OBJECT_CLASS(machine_class))));
     if (machine_help_func(qemu_get_machine_opts(), current_machine)) {
@@ -4578,7 +4586,8 @@ int main(int argc, char **argv, char **envp)
 
     ////////////////////////////////////////////////////////////////////////
     //
-    // JAMLEE: 调用 init 方法初始化真正的 Machine
+    // JAMLEE: 调用类静态方法 init 方法初始化真正的 Machine。MachineClass 是
+    // 有类静态方法的。
     //
     ////////////////////////////////////////////////////////////////////////
     machine_class->init(current_machine);

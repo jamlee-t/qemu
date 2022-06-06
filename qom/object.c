@@ -40,6 +40,7 @@ struct InterfaceImpl
     const char *typename;
 };
 
+// JAMLEE: 表示1个类
 struct TypeImpl
 {
     const char *name;
@@ -984,6 +985,7 @@ object_class_property_add(ObjectClass *klass,
     return prop;
 }
 
+// JAMLEE: property 也是划分为 static 和 Non-staic 的，分别挂到 ObjectClass 和 Object 上
 ObjectProperty *object_property_find(Object *obj, const char *name,
                                      Error **errp)
 {
